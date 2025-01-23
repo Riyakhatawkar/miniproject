@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js" // Generates the Prisma client for database interactions
+}
+
+datasource db {
+  provider = "postgresql"       // Specifies PostgreSQL as the database provider
+  url      = env("DATABASE_URL") // Database connection string in the .env file
+}
+
+model User {
+  id        Int       @id @default(autoincrement()) // Primary key
+  email     String    @unique                      // Unique email for each user
+  password  String                                // Hashed password
+  createdAt DateTime  @default(now())             // Automatically set creation time
+  updatedAt DateTime  @updatedAt                  // Automatically set last update time
+
+  // Relations
+  bookings  Booking[]                              // A user can have multiple bookings
+}
+
+model Booking {
+  id          Int      @id @default(autoincrement()) // Primary key
+  destination String                                // Travel destination
+  guests      Int                                   // Number of guests
+  arrivalDate DateTime                              // Arrival date
+  leavingDate DateTime                              // Leaving date
+  createdAt   DateTime @default(now())              // Automatically set creation time
+  updatedAt   DateTime @updatedAt                   // Automatically set last update time
+
+  // Relations
+  userId  Int
+  user    User    @relation(fields: [userId], references: [id]) // Booking belongs to a user
+}
